@@ -160,6 +160,33 @@ class TypeTest {
     assertEquals(5,v)
   }
 
+  /**
+   * type alias - 18.4 Stfi
+   */
+  @Test
+  def testTypeAlias(): Unit = {
+    import scala.collection.mutable._
+    type MyType = ArrayBuffer[String]
+    val v:MyType = new MyType
+    assertNotNull(v)
+  }
+
+  /**
+   * type alias - 18.4 Stfi
+   */
+  @Test
+  def testTypeAliasInAbstractClasses(): Unit = {
+    abstract class Man {
+      type SomeResultType
+      def obtain: SomeResultType
+    }
+    class Worker extends Man {
+      override type SomeResultType = String
+      override def obtain: SomeResultType = new SomeResultType
+    }
+    val w = new Worker
+    assertNotNull(w)
+  }
 
 }
 
