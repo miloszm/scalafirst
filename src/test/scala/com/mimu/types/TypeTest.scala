@@ -4,7 +4,7 @@ import org.junit.Assert._
 import org.junit.Test
 
 /**
- * Created by mm on.
+ * Created by mm.
  */
 class TypeTest {
 
@@ -40,5 +40,59 @@ class TypeTest {
     assertEquals(i1,i3)
 
   }
+
+  /**
+   * Singleton types - 18.1 SftI
+   */
+  @Test
+  def testSingletonTypes_Problem():Unit = {
+    class Doc {
+      def setTitle(title:String) = { this }
+      def setAuthor(title:String) = { this }
+    }
+
+    val doc = new Doc
+    doc.setTitle("Goto considered harmful").setAuthor("Hoare")
+
+    class Book extends Doc {
+      def addChapter(title:String) = {this}
+    }
+
+    val book = new Book
+
+    /**
+     * the following causes compilation error
+     */
+    //book.setTitle("Emma").addChapter("1")
+
+  }
+
+  /**
+   * Singleton types - 18.1 SftI
+   * Adding this.type as return type will make sure correct type is returned for subclasses
+   */
+  @Test
+  def testSingletonTypes_Solution():Unit = {
+    class Doc {
+      def setTitle(title:String):this.type = { this }
+      def setAuthor(title:String):this.type = { this }
+    }
+
+    val doc = new Doc
+    doc.setTitle("Goto considered harmful").setAuthor("Hoare")
+
+    class Book extends Doc {
+      def addChapter(title:String) = {this}
+    }
+
+    val book = new Book
+
+    /**
+     * the following causes compilation error
+     */
+    book.setTitle("Emma").addChapter("1")
+
+  }
+
 
 }
