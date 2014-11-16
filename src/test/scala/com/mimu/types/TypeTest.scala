@@ -94,5 +94,59 @@ class TypeTest {
 
   }
 
+  /**
+   * Singleton types - 18.1 SftI
+   * Passing object instance
+   */
+  @Test
+  def testPassingObjectInstance_Problem():Unit = {
+    object Title
+
+    class Doc {
+      /**
+       * line below won't compile as Title is an object, not a class
+       */
+      //def setTitle(obj:Title):this.type = {this}
+    }
+  }
+
+  /**
+   * Singleton types - 18.1 SftI
+   * Passing object instance
+   */
+  @Test
+  def testPassingObjectInstance_Solution():Unit = {
+    object Title
+
+    class Doc {
+      /**
+       * line below compiles
+       */
+      def setTitle(obj:Title.type):this.type = {this}
+    }
+  }
+
+  /**
+   * Type projections - 18.2 SftI
+   */
+  @Test
+  def testTypeProjection():Unit = {
+    class Network {
+      class Member(val v:Int)
+    }
+    val n1 = new Network
+    val n2 = new Network
+
+    object SomeObj {
+      def acceptMembers1(m:n1.Member) = this
+      def acceptMembers2(m:n2.Member) = this
+
+      /**
+       * we want to declare method which will accept any Member class instance
+       */
+      def acceptMembers3(m:Network#Member) = this
+    }
+  }
+
 
 }
