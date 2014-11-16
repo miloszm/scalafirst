@@ -92,4 +92,23 @@ class BoundsForTypeVariablesTest {
     assertTrue(p2.isInstanceOf[Pair[Dad]]) // this does not really check the 'Dad' part
   }
 
+  /**
+   * contravariant position limitations sometimes not necessary
+   */
+  @Test
+  def testContravariantPositionLimitation():Unit = {
+    class Pair[+A](val first:A, val second:A) {
+      /**
+       * causes compilation error: convariant A in contravariant position
+       * this is not needed protection as method can't damage the instance anyway
+       */
+      //def replaceSecond(newSecond: A) = new Pair[A](first, newSecond)
+      /**
+       * workaround for the above limitation
+       * (B is invariant so the compiler accepts it at the contravariant position)
+       */
+      def replaceSecond[B >: A](newSecond: B) = new Pair[B](first, newSecond)
+    }
+  }
+
 }
