@@ -161,7 +161,7 @@ class TypeTest {
   }
 
   /**
-   * type alias - 18.4 Stfi
+   * type alias - 18.4 SftI
    */
   @Test
   def testTypeAlias(): Unit = {
@@ -172,7 +172,7 @@ class TypeTest {
   }
 
   /**
-   * type alias - 18.4 Stfi
+   * type alias - 18.4 SftI
    */
   @Test
   def testTypeAliasInAbstractClasses(): Unit = {
@@ -186,6 +186,36 @@ class TypeTest {
     }
     val w = new Worker
     assertNotNull(w)
+  }
+
+  /**
+   * structural types - 18.5 SftI
+   */
+  @Test
+  def testStructuralType: Unit = {
+
+    class Printer {
+      def print(o: {def toPrint():String}): String ={
+        o.toPrint();
+      }
+    }
+
+    class Printee {
+      def toPrint():String = {
+        return "printee"
+      }
+    }
+
+    class NonPrintee{}
+
+    val p = new Printer
+    assertEquals("printee", p.print(new Printee))
+
+    /**
+     * the following won't compile because it does not have a method toPrint
+     */
+    //p.print(new NonPrintee)
+
   }
 
 }
