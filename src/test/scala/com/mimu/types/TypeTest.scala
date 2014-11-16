@@ -138,6 +138,9 @@ class TypeTest {
     val n2 = new Network
 
     object SomeObj {
+      /**
+       * nested class isn't a single type but has a separate type for each instance
+       */
       def acceptMembers1(m:n1.Member) = this
       def acceptMembers2(m:n2.Member) = this
 
@@ -148,5 +151,20 @@ class TypeTest {
     }
   }
 
+  /**
+   * type paths - 18.3 SftI
+   */
+  @Test
+  def testTypePaths(): Unit = {
+    val v = com.mimu.types.Abc.xyz
+    assertEquals(5,v)
+  }
+
 
 }
+
+
+object Abc {
+  val xyz = 5
+}
+
