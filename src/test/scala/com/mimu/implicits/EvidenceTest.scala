@@ -1,3 +1,5 @@
+package com.mimu.implicits
+
 /**
  * Created by mm on 15/03/2014.
  *
@@ -6,8 +8,8 @@
  *
  */
 
-import org.junit.Test
 import org.junit.Assert._
+import org.junit.Test
 
 import scala.annotation.implicitNotFound
 

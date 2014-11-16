@@ -1,3 +1,5 @@
+package com.mimu.implicits
+
 /**
  * Created by mm on 15/03/2014.
  *
@@ -5,8 +7,8 @@
  *
  */
 
-import org.junit.Test
 import com.mimu.Fraction
+import org.junit.Test
 
 
 class FractionTest {

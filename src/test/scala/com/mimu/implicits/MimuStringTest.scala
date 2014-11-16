@@ -1,3 +1,5 @@
+package com.mimu.implicits
+
 /**
  * Created by mm on 15/03/2014.
  *
@@ -7,13 +9,11 @@
  *
  */
 
-import org.junit.Test
+import com.mimu.implicits.MimuString.{d => _, _}
 import org.junit.Assert.assertEquals
-import com.mimu.Delimiters
-import com.mimu.MiloszString
-import com.mimu.MiloszString.{d => _,_}
+import org.junit.Test
 
-class MiloszStringTest {
+class MimuStringTest {
 
   @Test
   def testMiloszStringCountMs() = {
@@ -24,21 +24,21 @@ class MiloszStringTest {
 
   @Test
   def testMiloszStringWithDelims_Explicit() = {
-    val str = MiloszString("aaa")
+    val str = MimuString("aaa")
     println(str.withDelims(Delimiters("<<<", ">>>")))
   }
 
   @Test
   def testMiloszStringWithDelims_Implicit_Local() = {
-    val str = MiloszString("aaa")
+    val str = MimuString("aaa")
     implicit val d = Delimiters("<<<", ">>>")
     println(str.withDelims)
   }
 
   @Test
   def testMiloszStringWithDelims_Implicit_Imported() = {
-    val str = MiloszString("aaa")
-    import com.mimu.MiloszString.d
+    val str = MimuString("aaa")
+    import com.mimu.implicits.MimuString.d
     println(str.withDelims)
   }
 

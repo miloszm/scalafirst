@@ -1,3 +1,5 @@
+package com.mimu.implicits
+
 /**
  * Created by mm on 15/03/2014.
  *
@@ -5,16 +7,15 @@
  *
  */
 
-import com.mimu.MiloszPair
-import org.junit.Test
 import org.junit.Assert.assertEquals
+import org.junit.Test
 
 
-class MiloszPairTest {
+class MimuPairTest {
 
   @Test
   def testMiloszPairWithInts = {
-    val mp = MiloszPair(3,4)
+    val mp = MimuPair(3,4)
     println(mp.smaller)
     assertEquals(3,mp.smaller())
   }
@@ -29,7 +30,7 @@ class MiloszPairTest {
       override def compare(x: Zombie, y: Zombie): Int = x.z.compare(y.z)
     }
 
-    val mp = MiloszPair(Zombie(3),Zombie(4))
+    val mp = MimuPair(Zombie(3),Zombie(4))
     println(mp.smaller)
     assertEquals(Zombie(3),mp.smaller())
 

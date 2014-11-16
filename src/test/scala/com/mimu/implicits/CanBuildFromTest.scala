@@ -1,3 +1,5 @@
+package com.mimu.implicits
+
 /**
  * Created by mm on 15/11/2014.
  *
@@ -6,14 +8,12 @@
  *
  */
 
-import org.junit.Test
 import org.junit.Assert._
+import org.junit.Test
 
-import scala.collection.generic.{CanBuildFrom, GenTraversableFactory}
+import scala.collection.generic.CanBuildFrom
 import scala.collection.immutable.BitSet
-import scala.collection.mutable.Builder
-import scala.collection.mutable.Buffer
-import scala.collection.mutable.ArrayBuffer
+import scala.collection.mutable.{ArrayBuffer, Buffer, Builder}
 
 class CanBuildFromTest {
 

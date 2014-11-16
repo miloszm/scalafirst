@@ -1,5 +1,7 @@
-import org.junit.Test
+package com.mimu.types
+
 import org.junit.Assert._
+import org.junit.Test
 
 /**
  * Created by mm on 27/04/2014.
