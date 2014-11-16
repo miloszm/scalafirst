@@ -291,6 +291,34 @@ class TypeTest {
 
   }
 
+  /**
+   * infix types - 18.7 SftI
+   */
+  @Test
+  def testInfixType():Unit = {
+    type x[A,B] = (A,B)
+
+    def createTuple:String x Int = ("abc", 15)
+    def createTuple2:(String,Int) = ("abcd", 16)
+
+    printf(createTuple.toString())
+    printf(createTuple2.toString())
+
+    assertEquals(("abc", 15), createTuple)
+    assertEquals(("abcd", 16), createTuple2)
+  }
+
+  /**
+   * existential types - 18.8 SftI
+   */
+  @Test
+  def testExistentialType():Unit = {
+
+    val a:Array[A] forSome { type A <: AnyRef} = new Array[String](3)
+    assertNotNull(a)
+
+  }
+
 }
 
 
