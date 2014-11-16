@@ -4,7 +4,7 @@ import org.junit.Assert._
 import org.junit.Test
 
 /**
- * Created by mm on 15/03/2014.
+ * Created by mm.
  *
  * Exercise 1 ch 21 SftI
  *

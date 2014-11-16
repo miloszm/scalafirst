@@ -1,7 +1,7 @@
 package com.mimu.implicits
 
 /**
- * Created by mm on 15/03/2014.
+ * Created by mm on.
  *
  * Tests for section 21.8 Evidence
  *                   21.9 The @implicitNotFound Annotation

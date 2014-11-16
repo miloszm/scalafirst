@@ -1,7 +1,7 @@
 package com.mimu
 
 /**
- * Created by mm on 15/03/2014.
+ * Created by mm.
  */
 class Fraction(val num:Int, val den:Int){
 

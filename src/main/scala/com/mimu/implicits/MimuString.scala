@@ -1,7 +1,7 @@
 package com.mimu.implicits
 
 /**
- * Created by mm on 15/03/2014.
+ * Created by mm.
  */
 
 case class Delimiters(left: String, right: String)

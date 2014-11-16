@@ -4,7 +4,7 @@ import org.junit.Assert._
 import org.junit.Test
 
 /**
- * Created by mm on 27/04/2014.
+ * Created by mm on.
  */
 class TypeTest {
 

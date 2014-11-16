@@ -1,7 +1,7 @@
 package com.mimu.implicits
 
 /**
- * Created by mm on 15/03/2014.
+ * Created by mm.
  *
  * Tests for sections 21.2 Using Implicits for Enriching Existing Libraries
  *                    21.3 Importing Implicits
