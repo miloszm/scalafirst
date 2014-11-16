@@ -88,8 +88,8 @@ class BoundsForTypeVariablesTest {
     val p2 = p1.replaceSecond(new Dad) // will return pair of Dad
 
     println(p2)
-    assertTrue(p2.isInstanceOf[Pair[Son]])
-    assertTrue(p2.isInstanceOf[Pair[Dad]])
+    assertTrue(p1.isInstanceOf[Pair[Son]]) // this does not really check the 'Son' part
+    assertTrue(p2.isInstanceOf[Pair[Dad]]) // this does not really check the 'Dad' part
   }
 
 }
