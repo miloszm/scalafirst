@@ -218,6 +218,79 @@ class TypeTest {
 
   }
 
+  /**
+   * compound types - 18.6 SftI
+   */
+  @Test
+  def testCompoundType: Unit = {
+
+    class Printer {
+      def print(o: PrinteeTrait with PrinteeTrait2 {def toPrint():String}): String ={
+        o.toPrint();
+      }
+    }
+
+    trait PrinteeTrait {}
+    trait PrinteeTrait2 {}
+
+    class Printee extends PrinteeTrait with PrinteeTrait2 {
+      def toPrint():String = {
+        return "printee"
+      }
+    }
+
+    class PrinteeSimple extends PrinteeTrait /*with PrinteeTrait2*/ {
+      def toPrint():String = {
+        return "printeeSimple"
+      }
+    }
+
+    val p = new Printer
+    assertEquals("printee", p.print(new Printee))
+
+    /**
+     * won't compile if PrinteeSimple does not inherit trait PrinteeTrait2
+     */
+    //assertEquals("printeeSimple", p.print(new PrinteeSimple))
+
+  }
+
+  /**
+   * compound types - 18.6 SftI
+   */
+  @Test
+  def testCompoundType2: Unit = {
+
+    class Printer {
+      def print(o: Printee with PrinteeTrait {def toPrint():String}): String ={
+        o.toPrint();
+      }
+    }
+
+    trait PrinteeTrait {}
+
+    class Printee extends PrinteeTrait {
+      def toPrint():String = {
+        return "printee"
+      }
+    }
+
+    class PrinteeSimple /*extends PrinteeTrait*/{
+      def toPrint():String = {
+        return "printeeSimple"
+      }
+    }
+
+    val p = new Printer
+    assertEquals("printee", p.print(new Printee))
+
+    /**
+     * won't compile if PrinteeSimple does not inherit trait PrinteeTrait
+     */
+    //assertEquals("printeeSimple", p.print(new PrinteeSimple))
+
+  }
+
 }
 
 
