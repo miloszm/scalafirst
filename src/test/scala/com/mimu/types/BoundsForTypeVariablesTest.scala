@@ -68,4 +68,28 @@ class BoundsForTypeVariablesTest {
 
   }
 
+  /**
+   * lower bound
+   *
+   * B >: A - means any class B which is a supertype of A
+   *
+   */
+  @Test
+  def testLowerBound():Unit = {
+    class Pair[A](val first:A, val second:A) {
+      def replaceSecond[B >: A](newSecond: B) = new Pair[B](first, newSecond)
+      override def toString() = "(" + first.getClass.getSimpleName + "," + second.getClass.getSimpleName + ")"
+    }
+
+    class Dad
+    class Son extends Dad
+
+    val p1 = new Pair[Son](new Son, new Son) // will return pair of Son
+    val p2 = p1.replaceSecond(new Dad) // will return pair of Dad
+
+    println(p2)
+    assertTrue(p2.isInstanceOf[Pair[Son]])
+    assertTrue(p2.isInstanceOf[Pair[Dad]])
+  }
+
 }
