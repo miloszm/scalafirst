@@ -182,9 +182,139 @@ class ConstructorTest {
    * 4.4 SC Private Primary Constructor
    */
   @Test
-  def testPrivatePrimaryConstructor(): Unit = {
-    
+  def testPrivatePrimaryConstructor_IeSingleton(): Unit = {
+
+    class Person private (name:String)
+
+    //val p = new Person() // won't compile - constructor is private
+    //println(p)
+
+    object Person {
+      val person = new Person("malv")
+      def getInstance = person
+    }
+
+    val p = Person.getInstance
+    println(p)
+
+    /**
+     * in many cases, if you need a singleton, just use object
+     */
+
   }
 
+  /**
+   * 4.5 SC Default Parameters
+   */
+  @Test
+  def testConstructorDefaultParameters(): Unit = {
+
+    class Person(name: String = "Malvin"){
+      override def toString() = s"name=$name"
+    }
+
+    val p = new Person
+    println(p)
+
+  }
+
+  /**
+   * 4.5 SC Default Parameters - named parameters
+   */
+  @Test
+  def testConstructorDefaultNamedParameters(): Unit = {
+
+    class Person(val name: String = "Malvin", val age: Int = 77){
+      override def toString() = s"name=$name age=$age"
+    }
+
+    val p = new Person(age = 88)
+    println(p)
+    assertEquals(88, p.age)
+
+    val p2 = new Person(age = 37, name = "Lorena")
+    println(p2)
+    assertEquals(37, p2.age)
+
+  }
+
+  /**
+   * 4.6 SC Overriding Default Accessors and Mutators
+   */
+  @Test
+  def testOverridingDefaultAccessorsAndMutators(): Unit = {
+    class Person(private var _name: String) {
+      def name = _name
+      def name_= (aName: String){ _name = aName }
+      override def toString() = s"name=$name"
+    }
+
+    val p = new Person("Lorena")
+    p.name = "Kasia"
+    println(p)
+    assertEquals("Kasia", p.name)
+
+  }
+
+  /**
+   * 4.7 SC
+   */
+  @Test
+  def testObjectPrivateFields(): Unit = {
+    class Person {
+      private/*[this]*/ var age: Int = _
+      def setAge(age:Int){ this.age = age}
+      def older(that:Person):Boolean = this.age > that.age // wont compile for private[this], will compile for just private
+    }
+  }
+
+  /**
+   * 4.8 SC
+   */
+  @Test
+  def testLazyField(): Unit = {
+    class Lorena {
+      lazy val text = io.Source.fromFile("/etc/hosts").getLines.foreach(println)
+    }
+    val l = new Lorena
+
+    println("lazy text not intialized yet, waiting...")
+    Thread.sleep(2000)
+
+    l.text
+  }
+
+  /**
+   * 4.9 SC
+   */
+  @Test
+  def testInitializing(): Unit = {
+    case class Address(val a:String)
+    class Lorena {
+      var address = None: Option[Address]   // both styles work
+      var address2: Option[Address] = None  // I like this style better
+    }
+
+  }
+
+  /**
+   * 4.10 SC - Handling constructor parameters when extending a class
+   */
+  @Test
+  def testExtending(): Unit = {
+    case class Address(val a:String)
+    class Person(var name: String, var address:Address) {
+      override def toString() = s"name=$name address=$address"
+    }
+    /**
+     * do not use val or ver for the inherited constructor params
+     */
+    class Employee(name: String, address: Address, var yearJoined: Int) extends Person(name, address){
+      override def toString() = super.toString() + s" yearJoined=$yearJoined"
+    }
+
+    val lorena = new Employee("Lorena", Address("Pinto Way 1"), 2013)
+    println(lorena)
+  }
 
 }
