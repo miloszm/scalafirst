@@ -365,6 +365,40 @@ class ClassesAndPropertiesTest {
   @Test
   def test_SC_4_13(): Unit = {
 
+    /**
+     * 1
+     */
+    abstract class Animal(name: String){
+      def greeting: String // both def and val are fine here
+    }
+    class Dog(name: String) extends Animal(name) {
+      val greeting = "hau1"
+    }
+    println(new Dog("dog1").greeting)
+
+
+    /**
+     * 2
+     */
+    abstract class Animal2(name: String){
+      var greeting: String = "Miau2"
+    }
+    class Dog2(name: String) extends Animal2(name) {
+      greeting = "hau2"
+    }
+    println(new Dog2("dog2").greeting)
+
+    /**
+     * 3
+     */
+    trait Animal3{
+      val greeting: Option[String]
+    }
+    class Dog3(name: String) extends Animal3 {
+      val greeting = Some("hau3")
+    }
+    println(new Dog3("dog3").greeting)
+
   }
 
 }
