@@ -6,7 +6,7 @@ import org.junit.Assert._
 /**
  * Created by mm.
  */
-class ConstructorTest {
+class ClassesAndPropertiesTest {
 
   /**
    * 4.1 SC Creating a Primary Constructor
@@ -308,6 +308,7 @@ class ConstructorTest {
     }
     /**
      * do not use val or ver for the inherited constructor params
+     * this way you avoid generation of accessors in the subclass
      */
     class Employee(name: String, address: Address, var yearJoined: Int) extends Person(name, address){
       override def toString() = super.toString() + s" yearJoined=$yearJoined"
@@ -315,6 +316,55 @@ class ConstructorTest {
 
     val lorena = new Employee("Lorena", Address("Pinto Way 1"), 2013)
     println(lorena)
+  }
+
+  /**
+   * 4.11 SC - Calling a superclass constructor
+   */
+  @Test
+  def testCallingASuperclassConstructor(): Unit = {
+    class Person(var name: String, var age:Int){
+
+      def this(name:String){
+        this(name, 0)
+      }
+
+    }
+    /**
+     * either extends Person(name) or extends Person(name, 0) are ok
+     */
+    class Employee(name:String) extends Person(name, 0){
+      /**
+       * NOTE - auxiliary constructors here can't call superclass constructor
+       */
+      def this() {
+        this("")
+      }
+    }
+
+  }
+
+  /**
+   * 4.12 SC - When to use an abstract class
+   */
+  @Test
+  def test_SC_4_12(): Unit = {
+    /**
+     * trait's don't allow constructor parameters
+     */
+    //trait Castle(name:String) // won't compile
+    abstract class Castle(name:String){
+      def portcullisDown    // no body makes it abstract
+    }
+
+  }
+
+  /**
+   * 4.13 SC - Defining properties in an abstract base class (or trait)
+   */
+  @Test
+  def test_SC_4_13(): Unit = {
+
   }
 
 }
