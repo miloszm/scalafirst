@@ -14,6 +14,6 @@ class MimuString(val str:String) {
 
 object MimuString {
   def apply(str:String) = new MimuString(str)
-  implicit def string2MiloszString(str:String) = new MimuString(str)
+  implicit def string2MimuString(str:String) = new MimuString(str)
   implicit val d = Delimiters("<<<", ">>>")
 }

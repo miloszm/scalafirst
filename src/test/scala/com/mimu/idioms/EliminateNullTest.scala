@@ -128,7 +128,7 @@ class EliminateNullTest {
   def test_20_6_Try_Success_Failure_2(): Unit = {
 
     /**
-     * what is interesting here is that although i is Int, yielded collection is Try (!!)
+     * what is interesting here is that yielded collection is Try[Int], not List[Int] (!!)
      */
     println(s"Try(1000/2) ........... ${for ( i <- Try(1000/2)) yield i}")
 
@@ -141,7 +141,7 @@ class EliminateNullTest {
     val sy2 = "boo"
     val y2:Try[Int] = for { a <- Try(sx2.toInt); b <- Try(sy2.toInt) } yield a * b
     /**
-     * note - yielded is Try[Int], not some List[Int] - this is really cool !!
+     * note - yielded is Try[Int], not some List[Int] - this is really cool (!!)
      */
     y2 match {
       case Failure(f) => println(f)
