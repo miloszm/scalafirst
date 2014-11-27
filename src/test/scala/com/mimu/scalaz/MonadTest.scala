@@ -7,6 +7,11 @@ import scalaz._
 
 /**
  * Created by mm.
+ *
+ * Monads provide a solution to the following problem:
+ * if we have a value with contaxt, m a, how do we apply it to a function
+ * that takes normal a and returns a value with a context
+ *
  */
 class MonadTest {
 
@@ -68,6 +73,65 @@ class MonadTest {
         fa match {
           case Some(x) => f(x)
           case None => None
+        }
+      }
+    }
+  }
+
+  /**
+   * string list monad test - with implicits
+   */
+  @Test
+  def testStringListMonadWithImplicits():Unit = {
+
+    import std.list._
+
+    val monad = Monad[List]
+
+    println(monad)
+
+    val result = monad.bind(List("abc"))({s:String => List(s + s)})
+    println(result)
+    assertEquals(List("abcabc"), result)
+
+  }
+
+
+  /**
+   * string list monad test - without implicits
+   */
+  @Test
+  def testStringListMonadWithoutImplicits():Unit = {
+
+    val monad = Monad[List](createMonadForList)
+
+    println(monad)
+
+    val result = monad.bind(List("abc"))({s:String => List(s + s)})
+    println(result)
+    assertEquals(List("abcabc"), result)
+
+  }
+
+
+  /**
+   * creates monad for list
+   * in order to avoid using implicits from scalaz
+   * when creating Monad[List], second argument is implicit
+   * and the result of this method may be used instead
+   * this gives us self-containment of this test (for pedagogical reasons)
+   */
+  def createMonadForList: Monad[List] = {
+
+    new Monad[List] {
+      override def point[A](a: => A): List[A] = {
+        List(a)
+      }
+
+      override def bind[A, B](fa: List[A])(f: (A) => List[B]): List[B] = {
+        fa match {
+          case x::xs => f(x)
+          case Nil => Nil
         }
       }
     }
