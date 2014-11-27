@@ -5,7 +5,7 @@ import org.junit.Test
 
 import scalaz._
 
-import std.option._ /* why do we need this ? */
+import std.option._ /* why do we need this ? we need it for implicit Functor implementations for options*/
 //import std.list._   /* why do we need this ? */
 
 /**
@@ -42,11 +42,13 @@ class FunctorTest {
 
     val functor = Functor[Option]
 
-    val show:Option[Int] = functor.map(Some("lea harp"))(countVowels)
+    val showSome:Option[Int] = functor.map(Some("lea harp"))(countVowels)
+    println(showSome)
+    assertEquals(Some(3), showSome)
 
-    println(show)
-
-    assertEquals(Some(3), show)
+    val showNone:Option[Int] = functor.map(None)(countVowels)
+    println(showNone)
+    assertEquals(None, showNone)
 
   }
 
@@ -87,10 +89,12 @@ class FunctorTest {
     //val functor = Functor[List](listFunctor)
 
     val show:List[Int] = functor.map(List("lea harp", "abracadabra"))(countLettersA)
-
     println(show)
-
     assertEquals(List(2,5), show)
+
+    val showNil:List[Int] = functor.map(List())(countLettersA)
+    println(showNil)
+    assertEquals(List(), showNil)
 
   }
 
