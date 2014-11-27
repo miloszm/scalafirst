@@ -70,19 +70,31 @@ class ApplicativeTest {
   @Test
   def testApplicativeFunctor():Unit = {
 
-//    val optionApplicativeFunctor = new Applicative[Option] {
-//      override def point[A](a: => A): Option[A] = {
-//
-//      }
-//
-//      override def ap[A, B](fa: => Option[A])(f: => Option[(A) => B]): Option[B] = {
-//
-//      }
-//    }
-//
-//
-//    val appFunctor = Applicative[Option](optionApplicativeFunctor)
+    val optionApplicativeFunctor = new Applicative[Option] {
+      override def point[A](a: => A): Option[A] = {
+        Some(a)
+      }
 
+      override def ap[A, B](fa: => Option[A])(f: => Option[(A) => B]): Option[B] = {
+        for (
+          a <- fa;
+          ff <- f
+        )
+        yield ff(a)
+      }
+    }
+
+    val appFunctor = Applicative[Option](optionApplicativeFunctor)
+
+    def fun(x:String):String = {
+      "Scala " + x
+    }
+
+//    val result = appFunctor.map(Some("Scala"))(fun)
+//    println(result)
+
+    val result = appFunctor.ap(Some("Rules"))(Some(fun _)) // underscore needed to treat fun as a partially applied function
+    println(result)
 
   }
 
