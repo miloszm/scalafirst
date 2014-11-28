@@ -70,6 +70,10 @@ class MonadPoleBirdsTest {
   @Test
   def testMonadicPoleBirds_withBindOp():Unit = {
 
+    /**
+     * syntax.ToBindOps implicitly converts F[A] where [F: Bind]
+     * into BindOps[F, A] that implements >>= operator.
+     */
     import syntax.bind._
 
     case class Pole(left:Int, right:Int){
