@@ -66,4 +66,31 @@ class MonadPoleBirdsTest {
   }
 
 
+
+  @Test
+  def testMonadicPoleBirds_withBindOp():Unit = {
+
+    import syntax.bind._
+
+    case class Pole(left:Int, right:Int){
+      def landLeft (n:Int):Option[Pole] = {
+        val s = Some(Pole(left + n, right))
+        if (Math.abs((left+n)-right) < 4) s else None
+      }
+      def landRight(n:Int):Option[Pole] = {
+        val s = Some(Pole(left  , right+n ))
+        if (Math.abs(left-(right+n)) < 4) s else None
+      }
+    }
+
+    val r1 = Monad[Option].point(Pole(-2,-2)) >>= {_.landLeft(3)} >>= {_.landRight(5)}
+    println(r1)
+    assertEquals(Some(Pole(1,3)), r1)
+
+    val r2 = Monad[Option].point(Pole(-2,-2)) >>= {_.landLeft(3)} >>= {_.landRight(9)}
+    println(r2)
+    assertEquals(None, r2)
+
+  }
+
 }
