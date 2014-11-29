@@ -4,6 +4,7 @@ import org.junit.Test
 import org.junit.Assert._
 
 import scalaz._
+import Scalaz._
 
 /**
  * Created by mm.
@@ -52,6 +53,12 @@ class MonoidTest {
 
     assertEquals(2, lm.append(2, lm.zero))
 
+
+    import Scalaz._
+
+    assertEquals(3, 1 |+| 2)
+
+    assertEquals(2, 2 |+| lm.zero)
   }
 
   @Test
@@ -153,5 +160,53 @@ class MonoidTest {
     assertEquals(Some("aabbcc"), lm.append(lm.append(Some("aa"), Some("bb")), Some("cc")))
     assertEquals(Some("aabbcc"), lm.append(Some("aa"), lm.append((Some("bb")), Some("cc"))))
   }
+
+  /**
+   * misc Monoid tests
+   */
+  @Test
+  def miscMonoidTests(): Unit ={
+
+    /**
+     * thanks to Scalaz import normal lists and strings are elevated to be Monoids
+     * and support Monoid append operation
+     */
+    println(List(1, 2, 3) |+| List(4, 5, 6))
+    println("one" |+| "two")
+
+
+    /**
+     * tagging and zero
+     */
+    assertEquals(1, Monoid[Int @@ Tags.Multiplication].zero)
+    assertEquals(0, Monoid[Int].zero)
+    assertEquals("", Monoid[String].zero)
+    assertEquals(List(), Monoid[List[String]].zero)
+    assertEquals(false, Monoid[Boolean @@ Tags.Disjunction].zero)
+    assertEquals(true, Monoid[Boolean @@ Tags.Conjunction].zero)
+    assertEquals(Ordering.EQ, Monoid[Ordering].zero)
+
+    /**
+     * tagging and Monoid append
+     */
+    assertEquals(50, Tags.Multiplication(10) |+| Tags.Multiplication(5))
+    assertEquals(15, 10 |+| 5)
+    assertEquals(true, Tags.Disjunction(true) |+| Tags.Disjunction(false))
+    assertEquals(false, Tags.Conjunction(true) |+| Tags.Conjunction(false))
+    assertEquals(Ordering.LT, (Ordering.LT: Ordering) |+| Monoid[Ordering].zero)
+    assertEquals(Ordering.LT, (Ordering.LT: Ordering) |+| (Ordering.GT: Ordering))
+    assertEquals(Ordering.GT, (Ordering.GT: Ordering) |+| (Ordering.LT: Ordering))
+
+    /**
+     * example from LearnYouAHaskell - comparing according to length and if equal, lexicographically
+     */
+    def lengthCompare(lhs: String, rhs: String): Ordering =
+      (lhs.length ?|? rhs.length) |+| (lhs ?|? rhs)
+
+    assertEquals(Ordering.LT, lengthCompare("zzz", "aaaa"))
+    assertEquals(Ordering.GT, lengthCompare("aab", "aaa"))
+
+  }
+
 
 }
