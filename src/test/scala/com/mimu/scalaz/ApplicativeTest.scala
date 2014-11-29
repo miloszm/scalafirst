@@ -15,6 +15,11 @@ import scalaz._
  * NOTE - we are not using scalaz implicits here but rather we
  * provide our own implementations of Functor[Option] and Application[Option]
  *
+ * Applicative
+ * ap[A, B](fa: => F[A])(f: => F[(A) => B]): F[B]
+ *
+ * compare with functor:
+ * map[A, B](fa: F[A])(f: A => B): F[B]
  *
  */
 class ApplicativeTest {
