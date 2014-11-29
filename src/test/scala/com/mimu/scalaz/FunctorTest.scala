@@ -98,5 +98,36 @@ class FunctorTest {
 
   }
 
+  /**
+   * laws
+   */
+  @Test
+  def functorLaws(): Unit ={
+
+    import Scalaz._
+
+
+    List(1, 2, 3) map {identity} assert_=== List(1, 2, 3)
+
+    (List(1, 2, 3) map {{(_: Int) * 3} map {(_: Int) + 1}}) assert_=== (List(1, 2, 3) map {(_: Int) * 3} map {(_: Int) + 1})
+
+
+    /**
+     * I can't make the following to compile
+     */
+//    class FakeFunctor[F[_]] {
+//
+//      def mapx[A, B](fa: F[A])(f: A => B): F[B] = for (e <- fa) yield f(e)
+//
+//      def checkIdentity[A](fa: F[A])(implicit FA: Equal[F[A]]): Boolean = FA.equal(mapx(fa)((x:A) => x), fa)
+//
+//    }
+//
+//    val fakeOptionFunctor = new FakeFunctor[List]
+//    fakeOptionFunctor.checkIdentity(List(3:Int)) assert_=== true
+
+
+  }
+
 
 }
