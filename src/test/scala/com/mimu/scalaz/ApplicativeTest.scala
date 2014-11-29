@@ -254,6 +254,33 @@ class ApplicativeTest {
 
   }
 
+  /**
+   *
+   * from eed3si9n.com, some stuff is much easier in Haskell than in Scala
+   *
+   * list of partially applied functions as containers
+   *
+   */
+  @Test
+  def testSequenceOfApplicatives2(): Unit = {
+    import Scalaz._
+
+    def sequenceA[F[_]: Applicative, A](list: List[F[A]]): F[List[A]] = list match {
+      case Nil     => (Nil: List[A]).point[F]
+      case x :: xs => (x |@| sequenceA(xs)) {_ :: _}
+    }
+
+    type Function1Int[A] = ({type l[A]=Function1[Int, A]})#l[A] // from eed3si9n.com - why is this so hard in Scala ?
+
+    val s = sequenceA(List((_: Int) + 3, (_: Int) + 2, (_: Int) + 1): List[Function1Int[Int]])
+
+    println(s)
+
+    println(s(3))
+
+    assertEquals(List(6,5,4), s(3))
+
+  }
 
 
 }
