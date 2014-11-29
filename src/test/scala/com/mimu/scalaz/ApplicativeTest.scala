@@ -57,6 +57,45 @@ class ApplicativeTest {
 
   }
 
+  /**
+   * curried test
+   */
+  @Test
+  def testCurried(): Unit ={
+
+    val listOfPartiallyAppliedFunctions = List(1, 2, 3, 4) map {(_: Int) * (_:Int)}.curried
+
+    println(listOfPartiallyAppliedFunctions)
+
+    val resultList = listOfPartiallyAppliedFunctions map {_(3)}
+
+    println(resultList)
+
+    assertEquals(List(3,6,9,12), resultList)
+
+  }
+
+
+  /**
+   * curried test 2
+   */
+  @Test
+  def testCurried2(): Unit ={
+
+    def fun(x:Int)(y:Int):Int = x * y
+
+    val listOfPartiallyAppliedFunctions = List(1, 2, 3, 4) map { fun _ }
+
+    println(listOfPartiallyAppliedFunctions)
+
+    val resultList = listOfPartiallyAppliedFunctions map {_(4)}
+
+    println(resultList)
+
+    assertEquals(List(4,8,12,16), resultList)
+
+  }
+
 
   /**
    * summary:
@@ -134,6 +173,87 @@ class ApplicativeTest {
       }
     }
   }
+
+  /**
+   * misc applicative
+   *
+   * from: http://eed3si9n.com/learning-scalaz/Applicative.html
+   */
+  @Test
+  def miscApplicativeTest(): Unit ={
+    import Scalaz._
+    assertEquals(List(1)  ,         1.point[List])
+    assertEquals(1.some   ,         1.point[Option])
+    assertEquals(List(5)  ,         1.point[List] map {_ + 4})
+    assertEquals(5.some   ,         1.point[Option] map {_ + 4})
+
+    assertEquals(12.some  ,         9.some <*> {(_: Int) + 3}.some)
+    println({(_: Int) + 3}.some)
+
+    assertEquals(1.some   ,         1.some <* 2.some)
+    assertEquals(2.some   ,         1.some *> 2.some)
+
+    assertEquals(21.some  ,         12.some <*> { 9.some <*> {(_: Int) + (_: Int)}.curried.some })
+    assertEquals(108.some ,         12.some <*> { 9.some <*> {(_: Int) * (_: Int)}.curried.some })
+    assertEquals(102.some ,         (3.some |@| 99.some) {_ + _})
+
+    assertEquals(1.some   ,         1.some)
+
+    assertEquals(List(5,10,15,1,4,9)  ,         List(1, 2, 3) <*> List((_: Int) * 5, (x: Int) => x * x))
+    assertEquals(List(3+1,3+2,4+1,4+2,3*1,4*1,3*2,4*2)   ,         List(3, 4) <*> { List(1, 2) <*> List({(_: Int) + (_: Int)}.curried, {(_: Int) * (_: Int)}.curried)})
+    assertEquals(List("ha?","ha!","he?","he!")   ,         (List("ha", "he") |@| List("?", "!")) {_ + _})
+    assertEquals(1.some   ,         1.some)
+    assertEquals(1.some   ,         1.some)
+
+  }
+
+  /**
+   * lift2
+   */
+  @Test
+  def testLift2(): Unit ={
+    import Scalaz._
+
+    val f = Apply[Option].lift2({(_:Int) + (_:Int)})
+    println(f(5.some, 6.some))
+    assertEquals(11.some   ,         f(5.some, 6.some))
+
+  }
+
+  /**
+   * sequence of applicatives
+   *
+   * from: http://eed3si9n.com/learning-scalaz/Applicative.html
+   *
+   * Makes container upside down - inside container is flattened and used as outside container
+   *
+   * Haskell version:
+   * sequenceA :: (Applicative f) => [f a] -> f [a]
+   * sequenceA [] = pure []
+   * sequenceA (x:xs) = (:) <$> x <*> sequenceA xs
+   *
+   */
+  @Test
+  def testSequenceOfApplicatives(): Unit ={
+    import Scalaz._
+
+    def sequenceA[F[_]: Applicative, A](list: List[F[A]]): F[List[A]] = list match {
+      case Nil     => (Nil: List[A]).point[F]
+      case x :: xs => (x |@| sequenceA(xs)) {_ :: _}
+    }
+
+    assertEquals(Some(List(1,2))   ,         sequenceA(List(1.some, 2.some)))
+
+    assertEquals(None              ,         sequenceA(List(1.some, 2.some, none)))
+
+    assertEquals(List(List(1),List(2))   ,         sequenceA(List(List(1,2))))
+
+    println(sequenceA(List(List(1,2),List(3,4))))
+
+    assertEquals(List(List(1, 3), List(1, 4), List(2, 3), List(2, 4)), sequenceA(List(List(1,2),List(3,4))))
+
+  }
+
 
 
 }
