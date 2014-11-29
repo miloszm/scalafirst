@@ -208,5 +208,47 @@ class MonoidTest {
 
   }
 
+  /**
+   * Option as monoid
+   */
+  @Test
+  def testOptionAsMonoid(): Unit ={
+    assertEquals(None, Monoid[Option[String]].zero)
+
+    /**
+     * this won't compile until we do what's below
+     */
+    //assertEquals(Some("aabb"), Some("aa") |+| Some("bb"))
+
+    implicit def optionMonoid[A: Semigroup]: Monoid[Option[A]] = new Monoid[Option[A]] {
+      def append(f1: Option[A], f2: => Option[A]) = (f1, f2) match {
+        case (Some(a1), Some(a2)) => Some(Semigroup[A].append(a1, a2))
+        case (Some(a1), None)     => f1
+        case (None, Some(a2))     => f2
+        case (None, None)         => None
+      }
+
+      def zero: Option[A] = None
+    }
+
+    /**
+     * we also need to add explicit type on the left side of the |+| operator - : Option[String]
+     * otherwise it won't compile
+     */
+    assertEquals(Some("aabb"), (Some("aa"): Option[String]) |+| Some("bb"))
+  }
+
+  /**
+   * Tags first and last
+   */
+  @Test
+  def testTagsFirstAndLast():Unit = {
+
+    assertEquals(Some("ab"), ("a".some) |+| ("b".some))
+    assertEquals(Some("a"), Tags.First("a".some) |+| Tags.First("b".some))
+    assertEquals(Some("b"), Tags.Last("a".some) |+| Tags.Last("b".some))
+
+  }
+
 
 }
