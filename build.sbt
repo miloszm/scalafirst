@@ -2,19 +2,17 @@ name := "scalafirst"
 
 version := "1.0"
 
-scalaVersion := "2.11.4"
+scalaVersion := "2.10.4"
 
 libraryDependencies += "junit" % "junit" % "4.11" % "test"
 
-//libraryDependencies += "org.scalaz" %% "scalaz-core" % "7.1.0"
-
-val scalazVersion = "7.1.0"
+val scalazVersion = "7.2.0-SNAPSHOT"
 
 libraryDependencies ++= Seq(
-  "org.scalaz" %% "scalaz-core" % scalazVersion,
-  "org.scalaz" %% "scalaz-effect" % scalazVersion,
-  "org.scalaz" %% "scalaz-typelevel" % scalazVersion,
-  "org.scalaz" %% "scalaz-scalacheck-binding" % scalazVersion % "test"
+  "org.scalaz" % "scalaz-core_2.10" % scalazVersion,
+  "org.scalaz" % "scalaz-effect_2.10" % scalazVersion,
+  //"org.scalaz" % "scalaz-typelevel_2.10" % scalazVersion,
+  "org.scalaz" % "scalaz-scalacheck-binding_2.10" % scalazVersion % "test"
 )
 
 scalacOptions += "-feature"

@@ -184,7 +184,7 @@ class ClassesAndPropertiesTest {
   @Test
   def testPrivatePrimaryConstructor_IeSingleton(): Unit = {
 
-    class Person private (name:String)
+    class Person /*private does not compile in Scala 2.10*/(name:String)
 
     //val p = new Person() // won't compile - constructor is private
     //println(p)

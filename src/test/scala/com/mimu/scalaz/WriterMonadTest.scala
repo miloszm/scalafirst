@@ -25,7 +25,10 @@ class WriterMonadTest {
 
     val v2:Writer[String,Int] = 3.set("Smalish gang")
 
-    for(e <- v2) println(e)
+    /**
+     * stopped compiling in Scalaz 7.2-SNAPSHOT
+     */
+    //for(e <- v2) println(e)
 
     println(MonadTell[Writer, String].point(3))
 
@@ -33,7 +36,10 @@ class WriterMonadTest {
 
     println(v3)
 
-    for(e <- v3) println(e)
+    /**
+     * stopped compiling in Scalaz 7.2-SNAPSHOT
+     */
+    //for(e <- v3) println(e)
   }
 
   /**
