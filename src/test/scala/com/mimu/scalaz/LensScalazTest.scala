@@ -94,6 +94,11 @@ class LensScalazTest {
     println(forward(10.0) exec (t0))
 
 
+    checkLawsOfLens(t0, 2.0, turtleHeading, 3.0)
+    checkLawsOfLens(t0, Point(1.0,1.0), turtlePosition, Point(2.0,2.0))
+    checkLawsOfLens(Point(1.0,1.0), 2.0, pointX, 3.0)
+    checkLawsOfLens(Point(1.0,1.0), 2.0, pointY, 3.0)
+
   }
 
 
@@ -101,9 +106,6 @@ class LensScalazTest {
    * check laws of lens
    */
   def checkLawsOfLens[AHolder,B](aHolder:AHolder, b:B, l:Lens[AHolder,B], c:B): Unit ={
-    println(l.get(l.set(aHolder, b)) == b)
-    println(l.set(l.set(aHolder, b), c) == l.set(aHolder, c))
-    println(l.set(aHolder,l.get(aHolder)) == aHolder)
     assertTrue(l.get(l.set(aHolder, b)) == b) // I should get what I've set
     assertTrue(l.set(l.set(aHolder, b), c) == l.set(aHolder, c)) // I've flushed out whatever was there and I am getting the new value
     assertTrue(l.set(aHolder, l.get(aHolder)) == aHolder) // when I get and set immediately, I do not change anything
