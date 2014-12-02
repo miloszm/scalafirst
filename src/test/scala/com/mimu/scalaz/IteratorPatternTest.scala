@@ -49,5 +49,61 @@ class IteratorPatternTest {
 
   }
 
+  /**
+   * contents
+   */
+  @Test
+  def testContents(): Unit = {
+
+    def contents[F[_]: Traverse, A](f: F[A]): List[A] = Monoid[List[A]].applicative.traverse(f) {List(_)}
+    def contents2[F[_]: Traverse, A](f: F[A]): List[A] = f.traverse[({type l[X]=List[A]})#l, A] {List(_)}
+
+    val tree: Tree[Char] = 'P'.node('O'.leaf, 'L'.leaf)
+
+    println(contents(tree))
+    println(contents2(tree))
+
+  }
+
+  /**
+   * pound notation case
+   */
+  @Test
+  def testPoundNotation(): Unit = {
+    class A {
+      class B
+
+      def f(b: B) = "Got my B!"
+      def g(b: A#B) = "Got a B."
+    }
+
+    val a1 = new A
+    val a2 = new A
+
+    /**
+     * does not compile because a1.B is not a subclass of instance a2 (this)
+     */
+    //a2.f(new a1.B)
+
+    /**
+     * works fine thanks to the # notation - g accepts B of any instance, not just a2 (this)
+     */
+    assertEquals("Got a B.", a2.g(new a1.B))
+  }
+
+  /**
+   * shape
+   */
+  @Test
+  def testShape(): Unit ={
+
+    def shape[F[_]: Traverse, A](f: F[A]): F[Unit] = f traverse {_ => ((): Id[Unit])}
+
+    val tree: Tree[Char] = 'P'.node('O'.leaf, 'L'.leaf)
+
+    println(shape(tree).drawTree)
+
+  }
+
 
 }
