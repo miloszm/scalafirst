@@ -12,7 +12,7 @@ import Scalaz._
  * lens
  *
  * http://scalathon.org/2012/presentations/lenses.pdf
- * https://www.youtube.com/watch?v=efv0SQNde5Q
+ * https://www.youtube.com/watch?v=efv0SQNde5Q - Lenses A Functional Imperative - Edward Kmett
  *
  */
 
@@ -26,6 +26,12 @@ case class MLens[AHolder, B](
                              ){
   def get(a: AHolder): B = g(a)
   def set(b:B, a:AHolder): AHolder = s(a,b) // build a new holder this time with a new b in it
+  def mod(f: B => B, a:AHolder): AHolder = set(f(get(a)),a)
+  def andThen[C](l:MLens[B,C]) = MLens[AHolder,C](
+    g = ((a:AHolder) => l.get(get(a))),
+    s = ((a:AHolder,c:C) => mod((b => l.set(c,b)), a))
+  )
+  def compose[C](that: MLens[C,AHolder]) = that andThen this
 }
 
 
@@ -51,9 +57,9 @@ class LensTest {
     println(l.get(l.set(b, aHolder)) == b)
     println(l.set(c,l.set(b, aHolder)) == l.set(c, aHolder))
     println(l.set(l.get(aHolder),aHolder) == aHolder)
-    assertTrue(l.get(l.set(b, aHolder)) == b)
-    assertTrue(l.set(c,l.set(b, aHolder)) == l.set(c, aHolder))
-    assertTrue(l.set(l.get(aHolder),aHolder) == aHolder)
+    assertTrue(l.get(l.set(b, aHolder)) == b) // I should get what I've set
+    assertTrue(l.set(c,l.set(b, aHolder)) == l.set(c, aHolder)) // I've flushed out whatever was there and I am getting the new value
+    assertTrue(l.set(l.get(aHolder),aHolder) == aHolder) // when I get and set immediately, I do not change anything
   }
 
 }
