@@ -106,4 +106,29 @@ class ReaderFunctorTest {
     assertEquals("First aa Fred,Second aa Freddy,Third aa Fred",localExample("Fred"))
   }
 
+  /**
+   * Let's do the same example with my own Reader monad named MmReader
+   */
+  @Test
+  def testReaderMonad3():Unit = {
+
+    type MmReader[A, B] = ReaderT[scala.collection.immutable.List, A, B]
+    object MmReader extends KleisliInstances with KleisliFunctions {
+      def apply[A, B](f: A => scala.collection.immutable.List[B]): MmReader[A, B] = kleisli(f)
+    }
+
+    def myName(step: String): MmReader[String, String] = MmReader {(a:String) => List(step + "aa" + a)}
+
+    def localExample: MmReader[String, (String, String, String)] = for {
+      a <- myName("First")
+      b <- myName("Second")
+      c <- myName("Third")
+    } yield (a, b, c)
+
+    println(localExample)
+    assertEquals(List(("FirstaaFred","SecondaaFred","ThirdaaFred")),localExample("Fred"))
+
+  }
+
+
 }
