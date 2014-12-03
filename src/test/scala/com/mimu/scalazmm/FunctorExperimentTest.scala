@@ -1,9 +1,6 @@
-package com.mimu.scalaz
+package com.mimu.scalazmm
 
-import org.junit.Assert._
 import org.junit.Test
-
-import scalaz.{Functor, ProductFunctor}
 
 /**
  * I do not import scalaz on purpose
