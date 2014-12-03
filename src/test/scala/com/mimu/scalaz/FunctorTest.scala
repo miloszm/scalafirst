@@ -4,8 +4,9 @@ import org.junit.Assert._
 import org.junit.Test
 
 import scalaz._
+import Scalaz._
 
-import std.option._ /* why do we need this ? we need it for implicit Functor implementations for options*/
+//import std.option._ /* why do we need this ? we need it for implicit Functor implementations for options*/
 //import std.list._   /* why do we need this ? */
 
 /**
