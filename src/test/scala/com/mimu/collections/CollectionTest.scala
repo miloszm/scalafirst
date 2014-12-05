@@ -260,6 +260,47 @@ class CollectionTest {
     assertTrue(newFruits.contains(())) // contains Unit ()
   }
 
+  /**
+   * flattening
+   */
+  @Test
+  def testCollections_SC_10_15(): Unit = {
+    val ll = List(List(1,2),List(3,4))
+    println(ll.flatten)
+
+    val lll = List("Hello", "World")
+    println(lll.flatten)
+
+    val llll = List(Some(4), None, Some(3), None)
+    println(llll.flatten)
+    assertEquals(List(4,3),llll.flatten)
+
+  }
+
+  /**
+   * flatMap
+   *
+   * note - in flatMap - first map, then flatten !!!
+   *
+   */
+  @Test
+  def testCollections_SC_10_16(): Unit = {
+    val l = List(Some(4), None, Some(3), None)
+    println(l.flatMap((x)=>x).sum)
+    println(l.flatten.sum)
+
+    import scala.util.Try
+
+    val bag = List("1", "2", "three", "4", "3")
+    def toInt(s:String):Option[Int] = Try(Integer.parseInt(s.trim)).toOption
+    println(bag.flatMap(toInt).sum)
+    println((bag map(toInt) flatten).sum)
+    assertEquals(bag.flatMap(toInt).sum, (bag map(toInt) flatten).sum)
+
+  }
+
+
+
 
 
 
