@@ -282,6 +282,8 @@ class CollectionTest {
    *
    * note - in flatMap - first map, then flatten !!!
    *
+   * the name flatMap is reversed - it is really map then flat - the is the entire caveat
+   *
    */
   @Test
   def testCollections_SC_10_16(): Unit = {
@@ -296,6 +298,82 @@ class CollectionTest {
     println(bag.flatMap(toInt).sum)
     println((bag map(toInt) flatten).sum)
     assertEquals(bag.flatMap(toInt).sum, (bag map(toInt) flatten).sum)
+
+    println(bag.flatMap(toInt).partition(_ > 2))
+
+  }
+
+  /**
+   * filter
+   */
+  @Test
+  def testCollections_SC_10_17(): Unit = {
+
+    println(List.range(1,10).filter(_ % 2 == 0))
+
+  }
+
+  /**
+   * extracting a sequence of elements from a collection
+   */
+  @Test
+  def testCollections_SC_10_18(): Unit = {
+
+    val x = (1 to 10).toArray
+
+    println(x.getClass)
+
+    x.drop(3).foreach(print)
+    println
+    x.slice(3,5).foreach(print)
+    println(x.headOption)
+    println(x.lastOption)
+
+  }
+
+  /**
+   * groupBy, partition, etc. - splitting sequences into subsets
+   */
+  @Test
+  def testCollections_SC_10_19(): Unit = {
+
+    val l = List(2,5,9,4,7,1,8)
+
+    assertEquals(Map[Boolean,List[Int]]
+      (false -> List(2,5,4,1), true -> List(9,7,8)),
+      l.groupBy(_ > 5))
+
+    assertEquals(
+      (List(9,7,8), List(2,5,4,1)),
+      l.partition(_ > 5))
+
+    assertEquals(
+      (List(2,5), List(9,4,7,1,8)),
+      l.span(_ <= 5))
+
+    assertEquals(
+      (List(2,5), List(9,4,7,1,8)),
+      l.splitAt(2))
+
+    val groups = l.groupBy(_ > 5)
+    println(groups(true))
+    println(groups(false))
+
+    println("sliding step 1:")
+    l.sliding(3).foreach(println)
+    println("sliding step 2:")
+    l.sliding(3,2).foreach(println)
+
+    val ll = List((1,2),('a','b'),(3,4))
+    println(ll.unzip)
+
+    val couples = List(("Basia","Mikolaj"),("Beata","Piotr"))
+    val (women:List[String],men:List[String]) = couples unzip
+    val w = women
+    val m = men
+    println(w)
+    println(m)
+    println(women zip men)
 
   }
 
