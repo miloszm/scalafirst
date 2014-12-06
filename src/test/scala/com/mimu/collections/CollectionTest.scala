@@ -377,6 +377,89 @@ class CollectionTest {
 
   }
 
+  /**
+   * walking through a collection with the reduce and fold methods
+   */
+  @Test
+  def testCollections_SC_10_20(): Unit = {
+    val a = Array(3,6,8,3,1,4,2)
+
+    println(a.reduceLeft(_ + _))
+    println(a.reduceLeft(_ * _))
+    println(a.reduceLeft(_ max _))
+
+    def findMax(x:Int, y:Int):Int = {
+      val m = x max y
+      println (s"comparing $x and $y")
+      m
+    }
+    println(a.reduce(findMax))
+
+    val  product = (x:Int, y:Int) => {
+      val r = x * y
+      println(s"multiplied $x by $y")
+      r
+    }
+
+    val c = a.scanLeft(10)(product)
+    c.foreach(println)
+
+  }
+
+  /**
+   * extracting unique elements from a sequence
+   */
+  @Test
+  def testCollections_SC_10_21(): Unit = {
+
+    val v = Vector(1,1,2,3,3,3,4)
+
+    println(v.distinct)
+
+    println(v.toSet)
+
+    class Person(firstName:String, lastName:String){
+      override def toString = s"$firstName $lastName"
+      def canEqual(a:Any) = a.isInstanceOf[Person]
+      override def equals(that:Any):Boolean = that match {
+        case that: Person => that.canEqual(this) && this.hashCode == that.hashCode()
+        case _ => false
+      }
+
+      override def hashCode: Int = {
+        val prime = 31
+        var result = 1
+        result = prime * result + lastName.hashCode
+        result = prime * result + (if (firstName == null) 0 else firstName.hashCode)
+        result
+      }
+    }
+
+    object Person {
+      def apply(firstName: String, lastName: String) = new Person(firstName, lastName)
+    }
+
+    val list = List(Person("a", "b"), Person("c", "d"), Person("a","b"))
+    println(list)
+    println(list.distinct)
+
+
+
+  }
+
+  /**
+   * mergin sequential collections
+   */
+  @Test
+  def testCollections_SC_10_22(): Unit = {
+    val s1 = Set(1,2,3,4,5)
+    val s2 = Set(2,3,6)
+    println(s1 ++ s2)
+    println(s1 -- s2)
+    println(s1 intersect s2)
+    println(s1 diff s2)
+    println(s2 diff s1)
+  }
 
 
 
@@ -389,4 +472,6 @@ class CollectionTest {
 
 
 
-}
+
+
+  }
