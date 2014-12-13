@@ -6,7 +6,7 @@ scalaVersion := "2.10.4"
 
 libraryDependencies += "junit" % "junit" % "4.11" % "test"
 
-val scalazVersion = "7.2.0-SNAPSHOT"
+val scalazVersion = "7.1.0"
 
 libraryDependencies ++= Seq(
   "org.scalaz" % "scalaz-core_2.10" % scalazVersion withSources(),
@@ -32,7 +32,7 @@ lazy val root = (project in file(".")).
 //
 // All keys consist of both a name and a scope (where the scope has 3 axes: Projects, Configurations, Tasks
 //
-// cheat sheet:
+// cheat sheet (commands to be entered in sbt interactive session):
 //
 //  reload
 //  fullClasspath
@@ -42,6 +42,12 @@ lazy val root = (project in file(".")).
 //  baseDirectory
 //  !:
 //  inspect compile
+//  unmanagedBase
+//  unmanagedJars
+//  unmanagedJars in Compile := Seq.empty[sbt.Attributed[java.io.File]]
+//  libraryDependencies
+//  resolvers  // only added non-default resolvers
+//  externalResolvers   // all resolvers including default resolvers
 //
-//
-//
+// Aggregation means that running a task on the aggregate project will also run it on the
+// aggregated projects.
