@@ -111,13 +111,76 @@ class chapter3 {
   /**
    * reverse - exercise 3.12
    */
-  private def reverse[A](as: List[A]):List[A] = {
+  private def reverse2[A](as: List[A]):List[A] = {
     @tailrec
     def doReverse(as:List[A], acc:List[A]):List[A] = as match {
       case Nil => acc
       case x::xs => doReverse(xs, x::acc)
     }
     doReverse(as, Nil)
+  }
+
+  /**
+   * 3.13
+   * foldLeft in terms of foldRight
+   */
+  private def foldLeftR[A,B](as: List[A], z:B)(f: (B,A) => B): B = {
+    foldRight(as.reverse, z)((a,b)=>f(b,a))
+  }
+
+  /**
+   * 3.13
+   * foldRight in terms of foldLeft
+   */
+  private def foldRightL[A,B](as: List[A], z:B)(f: (A,B) => B): B = {
+    foldLeft(as.reverse, z)((a,b)=>f(b,a))
+  }
+
+  def foldRightViaFoldLeft_1[A,B](l: List[A], z: B)(f: (A,B) => B): B =
+    foldLeft(l, (b:B) => b)((g,a) => b => g(f(a,b)))(z)
+//foldLeft(List(1,2,3), 0)(_ + _)
+//    foldLeft(List(1,2,3), (b:Int => b))
+
+  /**
+   * this is hard - our B is now (Int)=>Int
+   * our z is (b:Int) => b
+   * our f is (g,a) => b => g(a + b)
+   * so our result is a function - at each step (g and a) are converted to a function b => g(a + b)
+   * so one argument gets applied and function is composed with the next one
+   * at the end such long-composed function with 1 missing argument remains
+   * if we apply z to it, we get the result
+   */
+  @Test
+  def testFoldRightViaFoldLeft_1(): Unit ={
+    val f = foldLeft[Int,(Int)=>Int](List(1,2,3), ((b:Int) => b))((g,a) => b => g(a + b))
+    println(f)
+    println(foldLeft[Int,(Int)=>Int](List(1,2,3), ((b:Int) => b))((g,a) => b => g(a + b))(0))
+  }
+
+  /**
+   * 3.14
+   */
+  private def append2[A](l:List[A], a:A):List[A] = {
+    foldRight(l, List(a))((a,b) => a :: b)
+  }
+
+  @Test
+  def testAppend2(): Unit ={
+    assertEquals(List(1,2,3,4), append2(List(1,2,3), 4))
+  }
+
+  /**
+   * 3.15
+   * concatenates a list of lists into a single list
+   */
+  private def simpleFlatten(l:List[List[Int]]): List[Int] = l match {
+    case Nil => Nil
+    case x::xs => x ::: simpleFlatten(xs)
+  }
+
+  @Test
+  def testSimpleFlatten(): Unit = {
+    assertEquals(List(1,2,3,4,5,6,7,8,9), simpleFlatten(List(List(1,2,3), List(4,5,6), List(7,8,9))))
   }
 
   /**
@@ -166,7 +229,7 @@ class chapter3 {
   }
 
   @Test
-  def testChapter3_ex_1_19(): Unit ={
+  def testChapter3_ex_1_10(): Unit ={
     println(tail(List(1,2,3,4)))
     println(setHead(5, List(1,2,3,4)))
     println(setHead(5, List()))
@@ -179,15 +242,37 @@ class chapter3 {
     println(foldRight(List(1,2,3,4), Nil:List[Int])(_ :: _))  // exercise 3.8
     println(foldRight(List(1,2,3,4) map ((x)=>1), 0)((x,y) => x + y))  // exercise 3.9
     println("fold right length of list(2) ", foldRight(List(1,2,3,4), 0)((x,_) => x + 1))  // exercise 3.9(2)
-    println("fold left sum " + foldLeft(List(1,2,3,4), 0)(_ + _))  // exercise 3.11 sum
-    println("fold left product " + foldLeft(List(1,2,3,4), 1)(_ * _))  // exercise 3.11 product
-    println("fold left length of list " + foldLeft(List(1,2,3,4) map ((x)=>1), 0)((x,y) => x + y))  // exercise 3.11 length of list
-    println("fold left length of list(2) " + foldLeft(List(1,2,3,4), 0)((x,_) => x + 1))  // exercise 3.11 length of list(2)
-    println("reverse " + reverse(List(1,2,3,4)))  // exercise 3.12
-    println("reverse using fold " + reverseUsingFold(List(1,2,3,4)))  // exercise 3.12
-    println("add 1 to each elem " + add1ToEachElem((List(1,2,3,4))))  // exercise 3.16
-    println("add 1 to each elem(2) " + add1ToEachElem2((List(1,2,3,4))))  // exercise 3.16
-    println("filter " + filter((List(1,2,3,4)))(_ < 3))  // exercise 3.19
+  }
+
+  @Test
+  def testChapter3_ex_11_19(): Unit ={
+    assertEquals(10, foldLeft(List(1,2,3,4), 0)(_ + _)) // exercise 3.11 sum
+    assertEquals(24, foldLeft(List(1,2,3,4), 1)(_ * _))  // exercise 3.11 product
+    assertEquals(4, foldLeft(List(1,2,3,4), 0)((x,_) => x + 1))  // exercise 3.11 length of list(2)
+    assertEquals(List(4, 3, 2, 1), reverse2(List(1,2,3,4)))  // exercise 3.12
+    assertEquals(List(4, 3, 2, 1), reverseUsingFold(List(1,2,3,4)))  // exercise 3.12
+
+    /**
+     * 3.13 foldLeft via foldRight
+     */
+    assertEquals(10, foldLeftR(List(1,2,3,4), 0)(_ + _))
+    assertEquals(24, foldLeftR(List(1,2,3,4), 1)(_ * _))
+    assertEquals(4, foldLeftR(List(1,2,3,4), 0)((x,_) => x + 1))
+
+    /**
+     * 3.13 foldRight via foldLeft
+     */
+    assertEquals(10, foldRightL(List(1,2,3,4), 0)(_ + _))
+    assertEquals(24, foldRightL(List(1,2,3,4), 1)(_ * _))
+    assertEquals(4, foldRightL(List(1,2,3,4), 0)((_,y) => y + 1))
+    assertEquals(4, foldRightViaFoldLeft_1(List(1,2,3,4), 0)((_,y) => y + 1))
+
+    assertEquals(List(1,2,3,4,5,6,7,8,9), simpleFlatten(List(List(1,2,3), List(4,5,6), List(7,8,9))))  // exercise 3.15
+    assertEquals(List(1,2,3,4), append2(List(1,2,3), 4))
+    assertEquals(List(5, 4, 3, 2), add1ToEachElem((List(1,2,3,4))))  // exercise 3.16
+    assertEquals(List(2, 3, 4, 5), add1ToEachElem2((List(1,2,3,4))))  // exercise 3.16
+    assertEquals(List(2,1), filter((List(1,2,3,4)))(_ < 3))  // exercise 3.19 TODO
+
   }
 
   /**
