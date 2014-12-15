@@ -181,6 +181,14 @@ class chapter4 {
 
   }
 
+  /**
+   * 4.5
+   * sequence in terms of traverse
+   */
+  def sequenceM2[A](a:List[OptionM[A]]): OptionM[List[A]] = {
+    traverseM(a)((x) => x)
+  }
+
   def traverseM[A, B](a: List[A])(f: A => OptionM[B]): OptionM[List[B]] =
     a.foldRight[OptionM[List[B]]](SomeM(Nil))((h,t) => map2(f(h),t)(_ :: _))
 
@@ -193,7 +201,7 @@ class chapter4 {
     catch { case e: Exception => NoneM }
 
     def parseInts(a: List[String]): OptionM[List[Int]] =
-      sequence(a map (ii => TryM(ii.toInt)))
+      sequenceM2(a map (ii => TryM(ii.toInt)))
 
     assertEquals(SomeM(List(2, 3, 5)),parseInts(List("2", "3", "5")))
     assertEquals(SomeM(List(2, 3, 5)),traverseM(List("2", "3", "5"))((ii:String) => TryM(ii.toInt)))
