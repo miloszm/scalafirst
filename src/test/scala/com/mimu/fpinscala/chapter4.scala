@@ -20,22 +20,30 @@ sealed trait OptionM[+A]{
   }
 
   def getOrElse[B >: A](default: => B): B = this match {
-    case s:SomeM[A] => s.get
+    case SomeM(a) => a
     case NoneM => default
   }
 
-  def flatMap[B](f: A => OptionM[B]): OptionM[B] = {
-    map(f) getOrElse NoneM
+  def flatMap[B](f: A => OptionM[B]): OptionM[B] = this match {
+    case SomeM(a) => f(a)
+    case NoneM => NoneM
+//    map(f) getOrElse NoneM
   }
 
   def orElse[B >: A](ob: => OptionM[B]): OptionM[B] = {
     map(SomeM(_)) getOrElse ob
   }
 
+  def filter(f: A => Boolean): OptionM[A] = {
+//    case s:SomeM[A] => if (f(s.get)) SomeM(s.get) else NoneM
+//    case NoneM => NoneM
+    val ff = (a:A) => if (f(a)) SomeM(a) else NoneM
+    flatMap(ff)
+  }
+
 }
 
-case class SomeM[+A](get: A) extends OptionM[A]{
-}
+case class SomeM[+A](get: A) extends OptionM[A]
 
 case object NoneM extends OptionM[Nothing]
 
@@ -68,9 +76,18 @@ class chapter4 {
 
   @Test
   def testOrElse(): Unit ={
-    assertEquals(SomeM[Int](3), SomeM[Int](3) orElse SomeM[Int](4))
+    assertEquals(SomeM(3), SomeM(3) orElse SomeM(4))
     val niente:OptionM[Int] = NoneM
-    assertEquals(SomeM[Int](4), niente orElse SomeM[Int](4))
+    assertEquals(SomeM(4), niente orElse SomeM(4))
+  }
+
+  @Test
+  def testFilter(): Unit ={
+    assertEquals(SomeM(3), SomeM(3) filter (_ == 3))
+    assertEquals(NoneM, SomeM(3) filter (_ == 4))
+    val niente:OptionM[Int] = NoneM
+    assertEquals(NoneM, niente filter (_ == 5))
+
   }
 
 }
