@@ -12,7 +12,8 @@ libraryDependencies ++= Seq(
   "org.scalaz" % "scalaz-core_2.10" % scalazVersion withSources(),
   "org.scalaz" % "scalaz-effect_2.10" % scalazVersion withSources(),
   //"org.scalaz" % "scalaz-typelevel_2.10" % scalazVersion,
-  "org.scalaz" % "scalaz-scalacheck-binding_2.10" % scalazVersion % "test"
+  "org.scalaz" % "scalaz-scalacheck-binding_2.10" % scalazVersion % "test",
+  "org.scalatest" %% "scalatest" % "2.2.1" % "test"
 )
 
 scalacOptions += "-feature"
