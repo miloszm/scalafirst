@@ -5,6 +5,7 @@ import org.junit.Test
 
 import scala.collection.GenTraversableOnce
 import scala.collection.generic.CanBuildFrom
+import scalaz.Monad
 
 trait Animal
 trait FurryAnimal extends Animal
@@ -519,6 +520,15 @@ class CollectionTest {
     def flatMap[A,B](ma: F[A])(f: A => F[B]): F[B]
     def map[A, B] (fa: F[A] ) (f: A => B): F[B] =
       flatMap(fa)(a => unit(f(a)))
+    def map2[A,B,C](ma: F[A], mb: F[B])(f: (A, B) => C): F[C] =
+      flatMap(ma)(a => map(mb)(b => f(a, b)))
+    def compose[A,B,C](f: A => F[B], g: B => F[C]): A => F[C] =
+      a => flatMap(f(a))(g)
+    def sequence[A](lma: List[F[A]]): F[List[A]] =
+      lma.foldRight(unit(List[A]()))((ma, mla) => map2(ma, mla)(_ :: _))
+    def traverse[A,B](la: List[A])(f: A => F[B]): F[List[B]] =
+      la.foldRight(unit(List[B]()))((a, mlb) => map2(f(a), mlb)(_ :: _))
+    def filterM[A](ms: List[A])(f: A => F[Boolean]): F[List[A]]
   }
 
 
@@ -533,9 +543,15 @@ class CollectionTest {
     val optionMonad = new MonadM[Option] {
       override def unit[A](a: => A): Option[A] = Some(a)
       override def flatMap[A, B](ma: Option[A])(f: (A) => Option[B]): Option[B] = ma flatMap f
+
+      override def filterM[A](ms: List[A])(f: A => Option[Boolean]): Option[List[A]] = {
+        ms.foldRight(unit(List[A]()))((a, mlb) => if (f(a).isDefined && f(a).get) map2(Some(a), mlb)(_ :: _) else mlb)
+      }
     }
+    //compose(f, (b: Boolean) => if (b) map2(unit(x),y)(_ :: _) else y)(x))
 
     println(optionMonad.flatMap[Int,String](Some(1))((x:Int) => Some("@" + x.toString + "@") ))
+    println("filterM MM -------> " + optionMonad.filterM[Int](List(1,2,3,4,5,6,7,8))(x => if (x == 3) None else Option(x < 6)))
 
     val listMonad = new MonadM[List] {
       override def unit[A](a: => A): List[A] = List(a)
@@ -544,6 +560,7 @@ class CollectionTest {
         type That = List[B]
         FlatMapper.flatMapMM[A,B,Repr,That](ma)(f)
       }
+      override def filterM[A](ms: List[A])(f: (A) => List[Boolean]): List[List[A]] = ???
     }
 
     println(listMonad.flatMap[Int,String](List(5,6,7))((x:Int) => List("@" + x.toString + "@") ))
@@ -558,9 +575,31 @@ class CollectionTest {
     val listMonad = new MonadM[List] {
       override def unit[A](a: => A): List[A] = List(a)
       override def flatMap[A, B](ma: List[A])(f: (A) => List[B]): List[B] = ma flatMap f
+      override def filterM[A](ms: List[A])(f: (A) => List[Boolean]): List[List[A]] = ???
     }
 
     println(listMonad.flatMap[Int,String](List(5,6,7))((x:Int) => List("@" + x.toString + "@") ))
+
+    println(listMonad.sequence(List(List(2), List(3,4))))
+
+  }
+
+
+  @Test
+  def testScalazMonadAndFilterM(): Unit ={
+    class MyMonad extends Monad[Option]{
+      override def point[A](a: => A): Option[A] = Some(a)
+      override def bind[A, B](fa: Option[A])(f: (A) => Option[B]): Option[B] = fa match {
+        case Some(x) => f(x)
+        case None => None
+      }
+    }
+
+    def myMonad = new MyMonad()
+
+    println("myMonad 1 ---> " + myMonad.filterM[Int](List(1,2,3,4,5,6,7,8))(x => if (x == 3) None else Option(x < 6)))
+    println("myMonad 2 ---> " + myMonad.filterM[Int](List(1,2,4,5,6,7,8))(x => if (x == 3) None else Option(x < 6)))
+    //println("myMonad 3 ---> " + myMonad.filterM[Int](List(1,2,3,4,5,6,7,8))(x => Some(x < 6)))
 
   }
 
