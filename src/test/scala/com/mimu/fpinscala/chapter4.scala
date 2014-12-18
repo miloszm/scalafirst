@@ -135,13 +135,22 @@ class chapter4 {
    * 4.3
    */
   def map2[A,B,C](a:OptionM[A], b:OptionM[B])(f: (A,B) => C): OptionM[C]  = {
-//    for {
-//      aa <- a
-//      bb <- b
-//    }
-//    yield(f(aa,bb))
+    for {
+      aa <- a
+      bb <- b
+    }
+    yield(f(aa,bb))
 
-    a flatMap (aa => b map (bb => f(aa, bb)))
+//    println (s"map2 called with $a $b")
+//
+//    def fff(aa:A, bb:B)(f: (A,B) => C) : C = {
+//      println (s"map2 performing f for $aa $bb")
+//      f(aa,bb)
+//    }
+//
+//    val r = a flatMap (aa => b map (bb => fff(aa, bb)(f)))
+//    println(s"map2 returning $r")
+//    r
 
   }
 
@@ -210,5 +219,11 @@ class chapter4 {
 
   }
 
+  @Test
+  def testSequence2():Unit = {
+
+    println(sequence(List(SomeM(3), SomeM(4))))
+
+  }
 
 }
