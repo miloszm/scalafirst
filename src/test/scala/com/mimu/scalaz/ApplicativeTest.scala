@@ -3,6 +3,7 @@ package com.mimu.scalaz
 import org.junit.Assert._
 import org.junit.Test
 
+import scala.util.Try
 import scalaz._
 import Scalaz._
 
@@ -288,5 +289,30 @@ class ApplicativeTest {
 
   }
 
+  /**
+   * test traverse with option as applicative
+   */
+  @Test
+  def testTraverseWithOptionAsApplicative(): Unit ={
+    val a:List[String] = List("1", "2", "33")
+    val aa:List[String] = List("1", "2", "bad input")
+    val fff:List[String] => List[Option[Int]] = (a:List[String]) => a map ((s:String) => Try(s.toInt).toOption)
+    val ff:String => Option[Int] = ((s:String) => Try(s.toInt).toOption)
+    println(a.traverse(ff))
+    println(aa.traverse(ff))
+
+    //traverse[G[_], B](f: A => G[B])(implicit G: Applicative[G]): G[F[B]]
+
+    // A is String
+    // G is Option
+    // B is Int
+    // G[B] is Option[Int]
+    // F is list
+    // returned G[F[B]] is Option[List[Int]]
+
+    /**
+     * this works so G i.e. Option[_] must be applicative
+     */
+  }
 
 }

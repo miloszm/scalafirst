@@ -3,6 +3,9 @@ package com.mimu.collections
 import org.junit.Assert._
 import org.junit.Test
 
+import scala.collection.GenTraversableOnce
+import scala.collection.generic.CanBuildFrom
+
 trait Animal
 trait FurryAnimal extends Animal
 case class Dog(name:String) extends Animal
@@ -287,7 +290,8 @@ class CollectionTest {
    */
   @Test
   def testCollections_SC_10_16(): Unit = {
-    val l = List(Some(4), None, Some(3), None)
+    val l = List(Some(4), None, Some(3), None, Some(7))
+    println(l.flatMap((x)=>x))
     println(l.flatMap((x)=>x).sum)
     println(l.flatten.sum)
 
@@ -462,16 +466,120 @@ class CollectionTest {
   }
 
 
+  /**
+   * ruminations test
+   */
+  @Test
+  def testRuminations(): Unit = {
+    val l = Some(Some(3))
+    println(l.flatMap((x:Some[Int])=>x))
 
+    println(l.flatMap((x:Some[Int])=>x map (_*2)))
 
+    println(l.flatMap(_ map (_*2)))
 
+    val ll = List(Some(3),Some(4),Some(5),Some(6), None)
+    println(ll.flatMap(_ filter(_ < 6)))
 
+    val lll:List[List[Int]] = List(List(1,2,3), List(4,5,6))
+    println(lll.flatten)
+    println(lll.flatMap((x:List[Int])=>x))
 
+    def f3(a:Option[Double], b:Option[Double]):Option[Double] = {
+      a flatMap (aa => b map (bb => (aa * bb)))
+    }
 
+    println(f3(Some(3), Some(4)))
+    println(f3(Some(3), None))
+    println(f3(None, Some(4)))
+    println(f3(None, None))
 
+    def f4(a:Option[Double], b:Option[Double]):Option[Double] = {
+      for (
+        aa <- a;
+        bb <- b
+      )
+      yield (aa*bb)
+    }
 
-
-
+    println(f4(Some(3), Some(4)))
+    println(f4(Some(3), None))
+    println(f4(None, Some(4)))
+    println(f4(None, None))
 
 
   }
+
+  trait FunctorM[F[_]] {
+    def map[A, B] (fa: F[A] ) (f: A => B): F[B]
+  }
+
+  trait MonadM[F[_]] extends FunctorM[F] {
+    def unit[A](a: => A): F[A]
+    def flatMap[A,B](ma: F[A])(f: A => F[B]): F[B]
+    def map[A, B] (fa: F[A] ) (f: A => B): F[B] =
+      flatMap(fa)(a => unit(f(a)))
+  }
+
+
+  @Test
+  def simpleFunctorAndMonadTest(): Unit ={
+    val optionFunctor = new FunctorM[Option] {
+      override def map[A, B](fa: Option[A])(f: (A) => B): Option[B] = fa map f
+    }
+
+    println(optionFunctor.map[Int,String](Some(3))((x:Int) => "@" + x.toString + "@" ))
+
+    val optionMonad = new MonadM[Option] {
+      override def unit[A](a: => A): Option[A] = Some(a)
+      override def flatMap[A, B](ma: Option[A])(f: (A) => Option[B]): Option[B] = ma flatMap f
+    }
+
+    println(optionMonad.flatMap[Int,String](Some(1))((x:Int) => Some("@" + x.toString + "@") ))
+
+    val listMonad = new MonadM[List] {
+      override def unit[A](a: => A): List[A] = List(a)
+      override def flatMap[A, B](ma: List[A])(f: (A) => List[B]): List[B] = {
+        type Repr = scala.collection.immutable.::[A]
+        type That = List[B]
+        FlatMapper.flatMapMM[A,B,Repr,That](ma)(f)
+      }
+    }
+
+    println(listMonad.flatMap[Int,String](List(5,6,7))((x:Int) => List("@" + x.toString + "@") ))
+
+    println(List(1).repr.getClass.getCanonicalName)
+
+  }
+
+  @Test
+  def listMonadTest(): Unit ={
+
+    val listMonad = new MonadM[List] {
+      override def unit[A](a: => A): List[A] = List(a)
+      override def flatMap[A, B](ma: List[A])(f: (A) => List[B]): List[B] = ma flatMap f
+    }
+
+    println(listMonad.flatMap[Int,String](List(5,6,7))((x:Int) => List("@" + x.toString + "@") ))
+
+  }
+
+
+
+}
+
+object FlatMapper {
+  def flatMapMM[A, B, Repr, That](ma: List[A])(f: A => GenTraversableOnce[B])(implicit bf: CanBuildFrom[Repr, B, That]): That = {
+
+    def repr: Repr = ma.asInstanceOf[Repr]
+
+    def builder = bf(repr) // extracted to keep method size under 35 bytes, so that it can be JIT-inlined
+    val b = builder
+    for (x <- ma) {
+      val xx:GenTraversableOnce[B] = f(x)
+      val xxx:TraversableOnce[B] = xx.seq
+      b ++= xxx
+    }
+    b.result
+  }
+}
