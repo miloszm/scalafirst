@@ -53,7 +53,7 @@ object InfiniteStreams extends App {
   }
 
   /**
-    * 5,12
+    * 5.12
     */
   def fromUnfold(n:Int):Stream[Int] = {
     unfold[Int,Int](n)(a => Some(a, a + 1))
@@ -80,6 +80,41 @@ object InfiniteStreams extends App {
   println(fibUnfold.take(10).toList)
   println(fibUnfold2.take(10).toList)
 
+  /**
+    * 5.13
+    */
+  def mapUnfold[A,B](s:Stream[A])(f:A => B): Stream[B] = {
+    unfold(s)(ss => if (ss.isEmpty) None else Some(f(ss.head),ss.tail))
+  }
+  def mapUnfold2[A,B](s:Stream[A])(f:A => B): Stream[B] = {
+    unfold(s){
+      case cons(h,t) => Some(f(h),t)
+      case _ => None
+    }
+  }
+  def takeUnfold[A](s:Stream[A], n:Int): Stream[A] = {
+    unfold((s,n))(ss => if (ss._1.isEmpty || ss._2 == 0) None else Some(ss._1.head,(ss._1.tail,ss._2-1)))
+  }
+  def takeUnfold2[A](s:Stream[A], n:Int): Stream[A] = {
+    unfold((s,n)){
+      case (cons(h,t),x) if (x > 0) => Some(h,(t, x-1))
+      case (_,x) if (x == 0) => None
+    }
+  }
+  def takeWhileUnfold[A](s:Stream[A])(f: A => Boolean): Stream[A] = {
+    unfold(s)(ss => if (ss.isEmpty || !f(ss.head)) None else Some(ss.head, ss.tail))
+  }
+  def zipWithUnfold[A,B,C](a: Stream[A], b: Stream[B])(f: (A,B) => C):Stream[C] = {
+    unfold((a,b))(ss => if (ss._1.isEmpty || ss._2.isEmpty) None else Some(f(ss._1.head, ss._2.head), (ss._1.tail, ss._2.tail)))
+  }
+
+  //unfold[A,S](z:S)(f: S => Option[(A,S)]): Stream[A]
+  println(mapUnfold[Int,Int](Stream(1,2,3,4))(_ + 2).take(10).toList)
+  println(mapUnfold2[Int,Int](Stream(1,2,3,4))(_ + 2).take(10).toList)
+  println(takeUnfold[Int](Stream(1,2,3,4), 3).toList)
+  println(takeUnfold2[Int](Stream(1,2,3,4), 3).toList)
+  println(takeWhileUnfold[Int](Stream(1,2,3,4))(_ < 4).toList)
+  println(zipWithUnfold(Stream(1,2,3,4), Stream(5,6,7,8))((a,b) => a + b).take(10).toList)
 }
 
 //import com.mimu.fpinscala.ch5.InfiniteStreams._
