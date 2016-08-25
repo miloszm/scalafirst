@@ -2,6 +2,8 @@ package com.mimu.fpinscala.ch6
 
 import com.mimu.fpinscala.StateM
 import com.mimu.fpinscala.StateM.sequence
+import com.mimu.fpinscala.StateM.modify
+import com.mimu.fpinscala.StateM.get
 
 /**
   * 6.11
@@ -51,18 +53,19 @@ import com.mimu.fpinscala.StateM.sequence
 
   object Candy {
 
-    def simulateMachine(inputs: List[Input]): StateM[Machine, List[Unit]] = {
-
-      val x: List[StateM[Machine, Unit]] = inputs.map(i => StateM.modify((s: Machine) => (i, s) match {
-        case (_, Machine(_, 0, _)) => s
-        case (Coin, Machine(false, _, _)) => s
-        case (Turn, Machine(true, _, _)) => s
-        case (Coin, Machine(true, candy, coin)) => Machine(false, candy, coin + 1)
-        case (Turn, Machine(false, candy, coin)) => Machine(true, candy - 1, coin)
-      }))
-      val a: StateM[Machine, List[Unit]] = sequence(x)
-      a
+    def update: (Input => (Machine) => Machine) = (i: Input) => (s: Machine) => (i, s) match {
+      case (_, Machine(_, 0, _)) => s
+      case (Coin, Machine(false, _, _)) => s
+      case (Turn, Machine(true, _, _)) => s
+      case (Coin, Machine(true, candy, coin)) => Machine(false, candy, coin + 1)
+      case (Turn, Machine(false, candy, coin)) => Machine(true, candy - 1, coin)
     }
+
+    def simulateMachine(inputs: List[Input]): StateM[Machine, (Int,Int)] = for {
+      _ <- sequence(inputs map update map modify)
+      s <- get
+    } yield (s.coins, s.candies)
+
   }
 
 object CandyDispenser extends App {
