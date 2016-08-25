@@ -114,10 +114,49 @@ object PureFunctions extends App {
   }
   def ints3(count: Int)(rng: RNG): (List[Int], RNG) = sequence2(List.fill(count)(int))(rng)
 
+  /**
+    * 6.8
+    */
+  def flatMap[A,B](f:Rand[A])(g: A => Rand[B]): Rand[B] = {
+    rng => {
+      val (i,r) = f(rng)
+      g(i)(r)
+    }
+  }
+  def nonNegativeLessThan(n:Int): Rand[Int] =
+    flatMap(nonNegativeInt){ i =>
+      val mod = i % n
+      if (i + (n-1) - mod >= 0) {
+        unit(mod)
+      }
+      else {
+        nonNegativeLessThan(n)
+      }
+    }
+
+  /**
+    * 6.9
+    */
+  def mapViaFlatMap[A,B](s: Rand[A])(f:A => B): Rand[B] =
+    flatMap(s){
+      i => {
+        unit(f(i))
+      }
+    }
+  def map2ViaFlatMap[A,B,C](ra: Rand[A], rb: Rand[B])(f: (A,B) => C): Rand[C] =
+    flatMap(ra){ a =>
+      map(rb){ b =>
+        f(a,b)
+      }
+    }
+
+
+
   val srng = SimpleRNG(1471)
   println(nonNegativeInt(srng))
   println(intsTailRec(10)(srng))
   println(double3(srng))
   println(ints2(7)(srng))
   println(ints3(7)(srng))
+  println(nonNegativeLessThan(50)(srng))
 }
