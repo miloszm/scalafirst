@@ -1,6 +1,6 @@
 package com.mimu.tryclass
 
-import java.net.URL
+import java.net.{MalformedURLException, URL}
 
 import scala.io.Source
 import scala.util.{Failure, Success, Try}
@@ -31,6 +31,18 @@ object TryClass extends App {
     case Failure(ex) => List(s"failure ${ex.getMessage}")
   }
 
+  val ppExc = getURLContent("httppp://finance.yahoo.com") match {
+    case Success(lines) => lines
+    case Failure(ex) => List(s"failure ${ex.getClass} ${ex.getMessage}")
+  }
+
+  val ppRecover = getURLContent("httppp://finance.yahoo.com") recover {
+    case e:MalformedURLException => "Enter valid URL"
+    case _ => getURLContent("http://finance.yahoo.com").get
+  }
+
   pp.foreach(println)
+  ppExc.foreach(println)
+  ppRecover.foreach(println)
 
 }
