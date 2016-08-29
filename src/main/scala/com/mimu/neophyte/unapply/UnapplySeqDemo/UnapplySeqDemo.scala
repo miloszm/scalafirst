@@ -1,4 +1,4 @@
-package com.mimu.unapply.UnapplySeqDemo
+package com.mimu.neophyte.unapply.UnapplySeqDemo
 
 /**
   * based on Neophyte's guide to Scala

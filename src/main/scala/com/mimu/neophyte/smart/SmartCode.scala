@@ -1,4 +1,4 @@
-package com.mimu.smart
+package com.mimu.neophyte.smart
 
 /**
   * from neophyte's guide to scala

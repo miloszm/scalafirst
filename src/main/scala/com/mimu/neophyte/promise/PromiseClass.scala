@@ -1,4 +1,4 @@
-package com.mimu.promise
+package com.mimu.neophyte.promise
 
 
 import concurrent.{Future, Promise}

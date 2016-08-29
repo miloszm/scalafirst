@@ -1,4 +1,4 @@
-package com.mimu.unapply
+package com.mimu.neophyte.unapply
 
 /**
   * based on Neophyte's guide to Scala

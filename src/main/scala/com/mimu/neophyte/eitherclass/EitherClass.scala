@@ -1,4 +1,4 @@
-package com.mimu.eitherclass
+package com.mimu.neophyte.eitherclass
 
 import java.net.{MalformedURLException, URL}
 

@@ -1,4 +1,4 @@
-package com.mimu.tryclass
+package com.mimu.neophyte.tryclass
 
 import java.net.{MalformedURLException, URL}
 

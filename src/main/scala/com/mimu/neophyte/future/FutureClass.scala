@@ -1,4 +1,4 @@
-package com.mimu.future
+package com.mimu.neophyte.future
 
 import scala.concurrent.Future
 import scala.util.{Failure, Random, Success}
