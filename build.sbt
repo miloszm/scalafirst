@@ -8,12 +8,15 @@ libraryDependencies += "junit" % "junit" % "4.11" % "test"
 
 val scalazVersion = "7.1.0"
 
+resolvers += "Typesafe releases" at "http://repo.ttypesafe.com/typesafe/releases"
+
 libraryDependencies ++= Seq(
   "org.scalaz" % "scalaz-core_2.10" % scalazVersion withSources(),
   "org.scalaz" % "scalaz-effect_2.10" % scalazVersion withSources(),
   //"org.scalaz" % "scalaz-typelevel_2.10" % scalazVersion,
   "org.scalaz" % "scalaz-scalacheck-binding_2.10" % scalazVersion % "test",
-  "org.scalatest" %% "scalatest" % "2.2.1" % "test"
+  "org.scalatest" %% "scalatest" % "2.2.1" % "test",
+  "com.typesafe.akka" %% "akka-actor" % "2.3.15"
 )
 
 scalacOptions += "-feature"
